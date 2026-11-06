@@ -20,6 +20,12 @@ spec:
         app.kubernetes.io/name: citybike
     spec:
       terminationGracePeriodSeconds: 10
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: citybike
           image: node:22-alpine
@@ -33,6 +39,11 @@ spec:
               value: "v1"
             - name: READY_MODE
               value: "ok"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
           readinessProbe:
             httpGet:
               path: /health/ready
